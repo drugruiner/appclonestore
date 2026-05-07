@@ -1,0 +1,7 @@
+.profile-dot {
+  display: none !important;
+}
+
+.ios-header {
+  justify-content: flex-start !important;
+}
