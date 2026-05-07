@@ -11,6 +11,8 @@ import './reviews.css';
 import './remove-account.css';
 import './liquid-tabbar.css';
 import './fixed-tabbar-final.css';
+import './nav-transitions.css';
+import './nav-transitions';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
