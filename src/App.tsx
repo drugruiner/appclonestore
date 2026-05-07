@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AppWindow, ChevronLeft, Gamepad2, Layers3, Search, Share2, X, type LucideIcon } from 'lucide-react';
+import { AppWindow, ChevronLeft, Gamepad2, Layers3, Search, X, type LucideIcon } from 'lucide-react';
 import { seedApps } from './data/apps';
 import { StoreApp } from './types';
 
@@ -32,6 +32,10 @@ function AppIcon({ app, large = false }: { app: StoreApp; large?: boolean }) {
       <span className="icon-shine" />
     </div>
   );
+}
+
+function ShareGlyph() {
+  return <span className="ios-share-glyph"><i /><b /></span>;
 }
 
 function DownloadStatus({ entry, onToggle }: { entry: InstallEntry; onToggle: () => void }) {
@@ -77,7 +81,7 @@ function AppDetail({ app, onClose, closing, installEntry, onToggleInstall }: { a
     <section className={`detail-screen ${closing ? 'closing' : ''}`}>
       <div className="detail-nav">
         <button className="nav-circle" onClick={onClose} aria-label="Назад"><ChevronLeft size={32} /></button>
-        <button className="nav-circle" aria-label="Поделиться"><Share2 size={26} /></button>
+        <button className="nav-circle share-button" aria-label="Поделиться"><ShareGlyph /></button>
       </div>
       <div className="detail-head">
         <AppIcon app={app} large />
