@@ -1,0 +1,88 @@
+.appstore-meta-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 132px;
+  grid-template-columns: none;
+  gap: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  margin: 24px -18px 24px;
+  padding: 16px 18px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.appstore-meta-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.appstore-meta-strip .meta-card {
+  min-width: 0;
+  height: 104px;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  text-align: center;
+  color: #8e8e93;
+  border-right: 1px solid rgba(255,255,255,.11);
+  scroll-snap-align: start;
+}
+
+.appstore-meta-strip .meta-card:first-child {
+  border-left: 0;
+}
+
+.appstore-meta-strip .meta-card:last-child {
+  border-right: 0;
+}
+
+.meta-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #8e8e93;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.appstore-meta-strip .meta-card strong {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  color: #d1d1d6;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: .02em;
+}
+
+.meta-sub {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  color: #8e8e93;
+  font-size: 14px;
+  line-height: 1.1;
+}
+
+@media (max-width: 380px) {
+  .appstore-meta-strip {
+    grid-auto-columns: 118px;
+    margin-inline: -14px;
+    padding-inline: 14px;
+  }
+
+  .appstore-meta-strip .meta-card strong {
+    font-size: 25px;
+  }
+}
