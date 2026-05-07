@@ -12,21 +12,11 @@ body.tab-backward .scroll-area {
 }
 
 body.detail-open-forward .detail-screen {
-  animation: detail-slide-in-right .42s cubic-bezier(.18,.86,.22,1) both !important;
+  animation: detail-slide-in-right .38s cubic-bezier(.18,.86,.22,1) both !important;
 }
 
 body.detail-close-back .detail-screen {
-  animation: detail-slide-out-right .32s cubic-bezier(.36,0,.2,1) both !important;
-}
-
-body.detail-open-forward .phone-shell > .ios-header,
-body.detail-open-forward .phone-shell > .scroll-area {
-  animation: page-push-left .42s cubic-bezier(.18,.86,.22,1) both;
-}
-
-body.detail-close-back .phone-shell > .ios-header,
-body.detail-close-back .phone-shell > .scroll-area {
-  animation: page-return-right .32s cubic-bezier(.36,0,.2,1) both;
+  animation: detail-slide-out-right .3s cubic-bezier(.36,0,.2,1) both !important;
 }
 
 .bottom-tabs button.active {
@@ -46,24 +36,13 @@ body.detail-close-back .phone-shell > .scroll-area {
 }
 
 @keyframes detail-slide-in-right {
-  0% { opacity: .2; transform: translateX(72px) scale(.985); filter: blur(8px); }
-  70% { opacity: 1; filter: blur(0); }
-  100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+  0% { opacity: 1; transform: translateX(100%); filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
 }
 
 @keyframes detail-slide-out-right {
-  0% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
-  100% { opacity: 0; transform: translateX(82px) scale(.982); filter: blur(8px); }
-}
-
-@keyframes page-push-left {
-  0% { transform: translateX(0) scale(1); opacity: 1; }
-  100% { transform: translateX(-18px) scale(.985); opacity: .72; }
-}
-
-@keyframes page-return-right {
-  0% { transform: translateX(-18px) scale(.985); opacity: .72; }
-  100% { transform: translateX(0) scale(1); opacity: 1; }
+  0% { opacity: 1; transform: translateX(0); filter: blur(0); }
+  100% { opacity: 1; transform: translateX(100%); filter: blur(0); }
 }
 
 @keyframes tab-button-pop {
@@ -77,10 +56,6 @@ body.detail-close-back .phone-shell > .scroll-area {
   body.tab-backward .scroll-area,
   body.detail-open-forward .detail-screen,
   body.detail-close-back .detail-screen,
-  body.detail-open-forward .phone-shell > .ios-header,
-  body.detail-open-forward .phone-shell > .scroll-area,
-  body.detail-close-back .phone-shell > .ios-header,
-  body.detail-close-back .phone-shell > .scroll-area,
   .bottom-tabs button.active {
     animation: none !important;
   }
