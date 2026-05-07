@@ -1,0 +1,66 @@
+.hero-card-footer {
+  grid-template-columns: 60px minmax(0, 1fr) auto;
+  gap: 14px;
+}
+
+.hero-card-footer > .app-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+}
+
+.hero-card-footer > div:nth-child(2) {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.hero-card-footer strong {
+  display: block;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-card-footer small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255,255,255,.68);
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-card-footer > div:last-child {
+  flex-shrink: 0;
+}
+
+.hero-card-footer .action-pill {
+  min-width: 98px;
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 15px;
+}
+
+@media (max-width: 380px) {
+  .hero-card-footer {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    gap: 10px;
+  }
+
+  .hero-card-footer > .app-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+  }
+
+  .hero-card-footer .action-pill {
+    min-width: 88px;
+    padding-inline: 12px;
+    font-size: 14px;
+  }
+}
