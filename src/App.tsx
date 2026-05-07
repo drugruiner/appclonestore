@@ -1,30 +1,7 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { Search, Sparkles, Star, Download, Plus, X, ChevronRight, Check } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Search, Sparkles, Star, Download, ChevronRight, Check } from 'lucide-react';
 import { seedApps } from './data/apps';
 import { StoreApp } from './types';
-
-const emptyApp = {
-  name: '',
-  developer: '',
-  category: '',
-  price: 'Free',
-  icon: '',
-  tagline: '',
-  description: '',
-  features: '',
-  screenshots: '',
-};
-
-function slugify(value: string) {
-  return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-}
-
-function syntheticReviews(appName: string) {
-  return [
-    { author: 'Demo User', rating: 5, text: `${appName} feels polished, fast, and ready for daily use.` },
-    { author: 'Synthetic Reviewer', rating: 4, text: 'Clean interface, useful features, and a very smooth onboarding flow.' },
-  ];
-}
 
 function matchesApp(app: StoreApp, search: string) {
   const normalizedSearch = search.trim().toLowerCase();
@@ -44,11 +21,9 @@ function matchesApp(app: StoreApp, search: string) {
 }
 
 export default function App() {
-  const [apps, setApps] = useState<StoreApp[]>(seedApps);
+  const [apps] = useState<StoreApp[]>(seedApps);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(seedApps[0].id);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [form, setForm] = useState(emptyApp);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [downloadedIds, setDownloadedIds] = useState<string[]>([]);
 
@@ -81,39 +56,6 @@ export default function App() {
     }, 1600);
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const app: StoreApp = {
-      id: slugify(form.name || `custom-${Date.now()}`),
-      name: form.name || 'Untitled App',
-      developer: form.developer || 'Independent Developer',
-      category: form.category || 'Utilities',
-      price: form.price || 'Free',
-      rating: 4.8,
-      downloads: 'New',
-      icon: form.icon || 'https://images.unsplash.com/photo-1558655146-9f40138edfeb?auto=format&fit=crop&w=160&q=80',
-      accent: '#007aff',
-      tagline: form.tagline || 'A beautiful new app for your collection.',
-      description: form.description || 'Manually added application. Edit the data source later to make it permanent.',
-      features: form.features.split(',').map((item) => item.trim()).filter(Boolean),
-      screenshots: form.screenshots.split(',').map((item) => item.trim()).filter(Boolean),
-      reviews: syntheticReviews(form.name || 'This app'),
-    };
-
-    if (app.features.length === 0) app.features = ['Clean UI', 'Fast launch', 'Mobile-ready'];
-    if (app.screenshots.length === 0) {
-      app.screenshots = ['https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=900&q=80'];
-    }
-
-    setApps((current) => [app, ...current]);
-    setSelectedId(app.id);
-    setQuery(app.name);
-    setCategory('All');
-    setForm(emptyApp);
-    setIsFormOpen(false);
-  }
-
   const isSelectedDownloading = downloadingId === selectedApp.id;
   const isSelectedDownloaded = downloadedIds.includes(selectedApp.id);
 
@@ -125,9 +67,6 @@ export default function App() {
             <div className="brand-mark"><Sparkles size={22} /></div>
             <span>RuBox</span>
           </div>
-          <button className="add-button" onClick={() => setIsFormOpen(true)}>
-            <Plus size={18} /> Add app
-          </button>
         </nav>
 
         <div className="hero-grid">
@@ -179,8 +118,7 @@ export default function App() {
             {filteredApps.length === 0 && (
               <div className="empty-state">
                 <strong>Ничего не найдено</strong>
-                <span>Попробуй другое название или добавь приложение вручную.</span>
-                <button onClick={() => setIsFormOpen(true)}>Добавить приложение</button>
+                <span>Если нужно добавить новое приложение в RuBox, напиши мне, и я внесу его вручную.</span>
               </div>
             )}
           </div>
@@ -235,23 +173,6 @@ export default function App() {
           </div>
         </section>
       </section>
-
-      {isFormOpen && (
-        <div className="modal-backdrop">
-          <form className="app-form" onSubmit={handleSubmit}>
-            <button type="button" className="close" onClick={() => setIsFormOpen(false)}><X size={20} /></button>
-            <h2>Add application manually</h2>
-            <p>Заполни форму, и приложение появится в RuBox. Позже сделаем сохранение в backend или GitHub data-файл.</p>
-            {Object.keys(emptyApp).map((key) => (
-              <label key={key}>
-                {key}
-                <input value={form[key as keyof typeof form]} onChange={(event) => setForm({ ...form, [key]: event.target.value })} placeholder={key === 'features' || key === 'screenshots' ? 'Comma separated values' : ''} />
-              </label>
-            ))}
-            <button className="submit-button" type="submit">Create app card</button>
-          </form>
-        </div>
-      )}
     </main>
   );
 }
