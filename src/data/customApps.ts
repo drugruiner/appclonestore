@@ -23,7 +23,7 @@ if (!seedApps.some((app) => app.id === raveId)) {
   });
 }
 
-appStoreIcons[raveId] = 'https://i.imgur.com/J2wM6xK.png';
+appStoreIcons[raveId] = ''https://i.postimg.cc/kGPnwQyy/image.png'';
 
 appStoreScreenshots[raveId] = [
   'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?q=80&w=1200&auto=format&fit=crop',
