@@ -69,18 +69,32 @@ function sizeMb(bytes) {
   return `${(Number(bytes) / 1024 / 1024).toFixed(1)} MB`;
 }
 
-async function lookup(term, country) {
+function scoreResult(item, term, id) {
+  const track = String(item.trackName ?? '').toLowerCase();
+  const seller = String(item.sellerName ?? item.artistName ?? '').toLowerCase();
+  let score = 0;
+  if (track === term.toLowerCase()) score += 100;
+  if (track.includes(term.toLowerCase())) score += 40;
+  if (id === 'minecraft') {
+    if (track === 'minecraft') score += 300;
+    if (seller.includes('mojang') || seller.includes('microsoft')) score += 300;
+    if (track.includes('realmcraft') || track.includes('realmcra')) score -= 800;
+  }
+  return score;
+}
+
+async function lookup(term, country, id) {
   const url = new URL('https://itunes.apple.com/search');
   url.searchParams.set('term', term);
   url.searchParams.set('entity', 'software');
-  url.searchParams.set('limit', '8');
+  url.searchParams.set('limit', id === 'minecraft' ? '25' : '8');
   url.searchParams.set('country', country);
 
   const response = await fetch(url);
   if (!response.ok) return null;
   const data = await response.json();
   const results = data.results ?? [];
-  return results.find((item) => item.trackName?.toLowerCase() === term.toLowerCase()) ?? results[0] ?? null;
+  return results.sort((a, b) => scoreResult(b, term, id) - scoreResult(a, term, id))[0] ?? null;
 }
 
 const icons = {};
@@ -91,7 +105,7 @@ for (const [id, term] of apps) {
   let item = null;
   for (const country of ['ru', 'us']) {
     try {
-      item = await lookup(term, country);
+      item = await lookup(term, country, id);
       if (item) break;
     } catch (error) {
       console.warn(`Asset fetch failed for ${id} in ${country}: ${error.message}`);
