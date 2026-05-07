@@ -1,42 +1,53 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+```svg
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="64" y1="56" x2="448" y2="456" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#061539"/>
-      <stop offset="1" stop-color="#010B26"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="1024">
+      <stop offset="0%" stop-color="#071B44"/>
+      <stop offset="100%" stop-color="#00112B"/>
     </linearGradient>
-    <linearGradient id="cubeTop" x1="255" y1="125" x2="305" y2="248" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#75D6FF"/>
-      <stop offset="1" stop-color="#127BFF"/>
+
+    <linearGradient id="cube" x1="250" y1="180" x2="760" y2="760">
+      <stop offset="0%" stop-color="#42B6FF"/>
+      <stop offset="100%" stop-color="#0047FF"/>
     </linearGradient>
-    <linearGradient id="cubeSide" x1="324" y1="212" x2="394" y2="396" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#0F58F5"/>
-      <stop offset="1" stop-color="#072A9D"/>
+
+    <linearGradient id="letter" x1="250" y1="200" x2="520" y2="760">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C9D7FF"/>
     </linearGradient>
-    <linearGradient id="rFace" x1="128" y1="170" x2="292" y2="380" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F4F9FF"/>
-      <stop offset="1" stop-color="#ABC8FF"/>
-    </linearGradient>
-    <filter id="shadow" x="58" y="54" width="396" height="404" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-      <feOffset dy="18"/>
-      <feGaussianBlur stdDeviation="18"/>
-      <feComposite in2="hardAlpha" operator="out"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0.0117647 0 0 0 0 0.109804 0 0 0 0 0.403922 0 0 0 0.42 0"/>
-      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
-      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+
+    <filter id="glow" x="0" y="0" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
     </filter>
   </defs>
-  <rect x="18" y="18" width="476" height="476" rx="108" fill="url(#bg)"/>
-  <rect x="18" y="18" width="476" height="476" rx="108" stroke="#2E66FF" stroke-opacity="0.35" stroke-width="6"/>
-  <g filter="url(#shadow)">
-    <path d="M243 122L377 201L266 270L134 192L243 122Z" fill="url(#cubeTop)"/>
-    <path d="M266 270L377 201V371L266 438V270Z" fill="url(#cubeSide)"/>
-    <path d="M134 192L266 270V438L134 358V192Z" fill="#06298B" fill-opacity="0.9"/>
-    <path d="M145 211C145 194.431 158.431 181 175 181H248.5C280.809 181 307 207.191 307 239.5C307 269.928 283.734 295.325 253.412 297.989L317 403C321.673 410.713 316.122 420 307.104 420H270.08C265.102 420 260.489 417.392 257.925 413.127L204.5 324.25H193V391C193 407.569 179.569 421 163 421C152.507 421 144 412.493 144 402V211H145Z" fill="url(#rFace)"/>
-    <path d="M193 229V281H244C260.569 281 274 269.807 274 255.5C274 241.193 260.569 229 244 229H193Z" fill="#061A57" fill-opacity="0.92"/>
-    <path d="M377 201L266 270" stroke="#8FE7FF" stroke-width="5" stroke-linecap="round"/>
-    <path d="M243 122L134 192" stroke="#BAF0FF" stroke-opacity="0.65" stroke-width="4" stroke-linecap="round"/>
-    <path d="M377 201V371" stroke="#5AB8FF" stroke-opacity="0.8" stroke-width="4" stroke-linecap="round"/>
+
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+
+  <g filter="url(#glow)">
+    <path d="M610 220L790 330V690L610 800L430 690V330L610 220Z" fill="url(#cube)"/>
+
+    <path d="M610 220L790 330L610 440L430 330L610 220Z" fill="#5ED2FF" opacity="0.95"/>
+
+    <path d="M610 440L790 330V690L610 800V440Z" fill="#005DFF" opacity="0.95"/>
+
+    <path d="M285 245C285 220 305 200 330 200H450C585 200 670 270 670 390C670 470 625 530 545 560L660 760C675 785 660 820 625 820H555C530 820 515 810 505 790L410 610H375V770C375 798 353 820 325 820H285C257 820 235 798 235 770V245H285ZM375 340V495H445C515 495 560 465 560 415C560 365 515 340 445 340H375Z" fill="url(#letter)"/>
   </g>
 </svg>
+```
+
+Замени этим SVG старую иконку в проекте.
+
+Сохрани как:
+
+* `public/icon.svg`
+
+И подключи в `index.html`:
+
+```html
+<link rel="icon" type="image/svg+xml" href="/appclonestore/icon.svg" />
+<link rel="apple-touch-icon" href="/appclonestore/icon.svg" />
+```
