@@ -1,7 +1,7 @@
 {
-  "name": "App Clone Store",
-  "short_name": "CloneStore",
-  "description": "Premium App Store-inspired app catalog.",
+  "name": "RuBox",
+  "short_name": "RuBox",
+  "description": "Premium app catalog for browsing and downloading apps.",
   "start_url": "/appclonestore/",
   "scope": "/appclonestore/",
   "display": "standalone",
