@@ -1,0 +1,87 @@
+.scroll-area,
+.detail-screen {
+  will-change: transform, opacity, filter;
+}
+
+body.tab-forward .scroll-area {
+  animation: tab-slide-from-right .42s cubic-bezier(.2,.82,.2,1) both;
+}
+
+body.tab-backward .scroll-area {
+  animation: tab-slide-from-left .42s cubic-bezier(.2,.82,.2,1) both;
+}
+
+body.detail-open-forward .detail-screen {
+  animation: detail-slide-in-right .42s cubic-bezier(.18,.86,.22,1) both !important;
+}
+
+body.detail-close-back .detail-screen {
+  animation: detail-slide-out-right .32s cubic-bezier(.36,0,.2,1) both !important;
+}
+
+body.detail-open-forward .phone-shell > .ios-header,
+body.detail-open-forward .phone-shell > .scroll-area {
+  animation: page-push-left .42s cubic-bezier(.18,.86,.22,1) both;
+}
+
+body.detail-close-back .phone-shell > .ios-header,
+body.detail-close-back .phone-shell > .scroll-area {
+  animation: page-return-right .32s cubic-bezier(.36,0,.2,1) both;
+}
+
+.bottom-tabs button.active {
+  animation: tab-button-pop .32s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes tab-slide-from-right {
+  0% { opacity: .35; transform: translateX(34px); filter: blur(8px); }
+  55% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+@keyframes tab-slide-from-left {
+  0% { opacity: .35; transform: translateX(-34px); filter: blur(8px); }
+  55% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+@keyframes detail-slide-in-right {
+  0% { opacity: .2; transform: translateX(72px) scale(.985); filter: blur(8px); }
+  70% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+
+@keyframes detail-slide-out-right {
+  0% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translateX(82px) scale(.982); filter: blur(8px); }
+}
+
+@keyframes page-push-left {
+  0% { transform: translateX(0) scale(1); opacity: 1; }
+  100% { transform: translateX(-18px) scale(.985); opacity: .72; }
+}
+
+@keyframes page-return-right {
+  0% { transform: translateX(-18px) scale(.985); opacity: .72; }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
+
+@keyframes tab-button-pop {
+  0% { transform: scale(.92); }
+  70% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.tab-forward .scroll-area,
+  body.tab-backward .scroll-area,
+  body.detail-open-forward .detail-screen,
+  body.detail-close-back .detail-screen,
+  body.detail-open-forward .phone-shell > .ios-header,
+  body.detail-open-forward .phone-shell > .scroll-area,
+  body.detail-close-back .phone-shell > .ios-header,
+  body.detail-close-back .phone-shell > .scroll-area,
+  .bottom-tabs button.active {
+    animation: none !important;
+  }
+}
