@@ -14,6 +14,8 @@ import './fixed-tabbar-final.css';
 import './nav-transitions.css';
 import './preload-icons';
 import './nav-transitions';
+import './tabbar-detail-navigation';
+import './share-glyph-fix.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
