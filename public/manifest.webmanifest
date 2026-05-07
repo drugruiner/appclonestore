@@ -2,7 +2,7 @@
   "name": "RuBox",
   "short_name": "RuBox",
   "description": "Premium app catalog for browsing and downloading apps.",
-  "start_url": "/appclonestore/?v=7",
+  "start_url": "/appclonestore/?v=9",
   "scope": "/appclonestore/",
   "display": "standalone",
   "background_color": "#07111f",
@@ -10,14 +10,8 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/appclonestore/rubox-final-v7-192.png?v=7",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/appclonestore/rubox-final-v7-512.png?v=7",
-      "sizes": "512x512",
+      "src": "/appclonestore/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     }
