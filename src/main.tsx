@@ -7,6 +7,7 @@ import './hero-card-fix.css';
 import './app-screenshots.css';
 import './pull-refresh.css';
 import './appstore-meta.css';
+import './reviews.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
