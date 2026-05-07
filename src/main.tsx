@@ -9,6 +9,7 @@ import './pull-refresh.css';
 import './appstore-meta.css';
 import './reviews.css';
 import './remove-account.css';
+import './liquid-tabbar.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
