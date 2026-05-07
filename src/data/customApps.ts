@@ -18,14 +18,18 @@ if (!seedApps.some((app) => app.id === raveId)) {
     reviews: '18K',
     rank: '#12 в Развлечения',
     tags: ['Фильмы', 'Видео', 'Друзья', 'Watch Party'],
-    screenshots: ['Смотрите вместе', 'Чат с друзьями', 'Видео онлайн'],
+    screenshots: ['https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?q=80&w=1200&auto=format&fit=crop', 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop', 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=1200&auto=format&fit=crop'],
     action: 'Скачать',
   });
 }
 
-appStoreIcons[raveId] = 'https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/4e/9a/7c/4e9a7c4c-0a68-b163-0000-0a850ac67334/AppIcon-0-0-1x_U007epad-0-1-85-220.png/512x512bb.png';
+appStoreIcons[raveId] = 'https://i.imgur.com/J2wM6xK.png';
 
-appStoreScreenshots[raveId] = [];
+appStoreScreenshots[raveId] = [
+  'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?q=80&w=1200&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1200&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=1200&auto=format&fit=crop'
+];
 
 appStoreMetadata[raveId] = {
   rating: '4.7',
