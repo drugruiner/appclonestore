@@ -9,7 +9,7 @@
   content: '' !important;
   position: absolute !important;
   left: 50% !important;
-  top: 3px !important;
+  top: 1.5px !important;
   width: 2.4px !important;
   height: 11.5px !important;
   transform: translateX(-50%) !important;
@@ -21,7 +21,7 @@
   content: '' !important;
   position: absolute !important;
   left: 50% !important;
-  top: 3px !important;
+  top: 1.5px !important;
   width: 9.5px !important;
   height: 9.5px !important;
   border-left: 2.4px solid currentColor !important;
@@ -47,7 +47,7 @@
 .ios-share-glyph b {
   position: absolute !important;
   left: 50% !important;
-  bottom: 13px !important;
+  bottom: 14.5px !important;
   width: 9px !important;
   height: 4px !important;
   transform: translateX(-50%) !important;
