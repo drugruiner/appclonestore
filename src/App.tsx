@@ -1,5 +1,5 @@
-import { FormEvent, useMemo, useState } from 'react';
-import { Search, Sparkles, Star, Download, Plus, X, ChevronRight } from 'lucide-react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { Search, Sparkles, Star, Download, Plus, X, ChevronRight, Check } from 'lucide-react';
 import { seedApps } from './data/apps';
 import { StoreApp } from './types';
 
@@ -26,24 +26,60 @@ function syntheticReviews(appName: string) {
   ];
 }
 
+function matchesApp(app: StoreApp, search: string) {
+  const normalizedSearch = search.trim().toLowerCase();
+  if (!normalizedSearch) return true;
+
+  return [
+    app.name,
+    app.developer,
+    app.category,
+    app.tagline,
+    app.description,
+    ...app.features,
+  ]
+    .join(' ')
+    .toLowerCase()
+    .includes(normalizedSearch);
+}
+
 export default function App() {
   const [apps, setApps] = useState<StoreApp[]>(seedApps);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(seedApps[0].id);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [form, setForm] = useState(emptyApp);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadedIds, setDownloadedIds] = useState<string[]>([]);
 
-  const selectedApp = apps.find((app) => app.id === selectedId) ?? apps[0];
   const categories = ['All', ...Array.from(new Set(apps.map((app) => app.category)))];
   const [category, setCategory] = useState('All');
 
   const filteredApps = useMemo(() => {
     return apps.filter((app) => {
-      const matchesSearch = `${app.name} ${app.developer} ${app.category}`.toLowerCase().includes(query.toLowerCase());
+      const matchesSearch = matchesApp(app, query);
       const matchesCategory = category === 'All' || app.category === category;
       return matchesSearch && matchesCategory;
     });
   }, [apps, category, query]);
+
+  const selectedApp = apps.find((app) => app.id === selectedId) ?? filteredApps[0] ?? apps[0];
+
+  useEffect(() => {
+    if (filteredApps.length > 0 && !filteredApps.some((app) => app.id === selectedId)) {
+      setSelectedId(filteredApps[0].id);
+    }
+  }, [filteredApps, selectedId]);
+
+  function handleDownload(appId: string) {
+    if (downloadingId || downloadedIds.includes(appId)) return;
+
+    setDownloadingId(appId);
+    window.setTimeout(() => {
+      setDownloadingId(null);
+      setDownloadedIds((current) => (current.includes(appId) ? current : [...current, appId]));
+    }, 1600);
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -72,9 +108,14 @@ export default function App() {
 
     setApps((current) => [app, ...current]);
     setSelectedId(app.id);
+    setQuery(app.name);
+    setCategory('All');
     setForm(emptyApp);
     setIsFormOpen(false);
   }
+
+  const isSelectedDownloading = downloadingId === selectedApp.id;
+  const isSelectedDownloaded = downloadedIds.includes(selectedApp.id);
 
   return (
     <main>
@@ -82,7 +123,7 @@ export default function App() {
         <nav className="topbar">
           <div className="brand">
             <div className="brand-mark"><Sparkles size={22} /></div>
-            <span>App Clone Store</span>
+            <span>RuBox</span>
           </div>
           <button className="add-button" onClick={() => setIsFormOpen(true)}>
             <Plus size={18} /> Add app
@@ -91,18 +132,23 @@ export default function App() {
 
         <div className="hero-grid">
           <div>
-            <p className="eyebrow">Premium app discovery</p>
-            <h1>Красивый каталог приложений в стиле App Store.</h1>
-            <p className="hero-copy">Автоматический импорт данных можно подключить следующим этапом, а сейчас MVP уже поддерживает карточки, страницы приложений, карусели, отзывы и ручное добавление.</p>
+            <p className="eyebrow">RuBox app library</p>
+            <h1>RuBox</h1>
+            <p className="hero-copy">Открывай страницы приложений, ищи нужные названия, смотри функции, отзывы и запускай красивую имитацию скачивания прямо из каталога.</p>
             <div className="search-box">
               <Search size={20} />
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search apps, developers, categories" />
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Введите название приложения" />
             </div>
+            {query.trim() && (
+              <p className="search-hint">
+                Найдено: {filteredApps.length}. Нажми на приложение в списке, чтобы открыть его страницу.
+              </p>
+            )}
           </div>
           <div className="featured-card" style={{ '--accent': selectedApp.accent } as React.CSSProperties}>
             <img src={selectedApp.icon} alt="" />
             <div>
-              <p>Featured today</p>
+              <p>Сейчас в RuBox</p>
               <h2>{selectedApp.name}</h2>
               <span>{selectedApp.tagline}</span>
             </div>
@@ -129,6 +175,14 @@ export default function App() {
                 <ChevronRight size={18} />
               </button>
             ))}
+
+            {filteredApps.length === 0 && (
+              <div className="empty-state">
+                <strong>Ничего не найдено</strong>
+                <span>Попробуй другое название или добавь приложение вручную.</span>
+                <button onClick={() => setIsFormOpen(true)}>Добавить приложение</button>
+              </div>
+            )}
           </div>
         </aside>
 
@@ -139,7 +193,17 @@ export default function App() {
               <p className="category-label">{selectedApp.category}</p>
               <h2>{selectedApp.name}</h2>
               <p>{selectedApp.developer}</p>
-              <button className="get-button">{selectedApp.price === 'Free' ? 'Get' : selectedApp.price}</button>
+              <button
+                className={`download-button ${isSelectedDownloading ? 'loading' : ''} ${isSelectedDownloaded ? 'done' : ''}`}
+                onClick={() => handleDownload(selectedApp.id)}
+                disabled={isSelectedDownloading}
+                aria-label={`Download ${selectedApp.name}`}
+              >
+                {isSelectedDownloading && <span className="download-spinner" />}
+                {isSelectedDownloaded && !isSelectedDownloading && <Check size={18} />}
+                {!isSelectedDownloading && !isSelectedDownloaded && <Download size={18} />}
+                <span>{isSelectedDownloading ? 'Загрузка' : isSelectedDownloaded ? 'Готово' : 'Скачать'}</span>
+              </button>
             </div>
           </div>
 
@@ -177,7 +241,7 @@ export default function App() {
           <form className="app-form" onSubmit={handleSubmit}>
             <button type="button" className="close" onClick={() => setIsFormOpen(false)}><X size={20} /></button>
             <h2>Add application manually</h2>
-            <p>Заполни форму, и приложение появится в каталоге. Позже сделаем сохранение в backend или GitHub data-файл.</p>
+            <p>Заполни форму, и приложение появится в RuBox. Позже сделаем сохранение в backend или GitHub data-файл.</p>
             {Object.keys(emptyApp).map((key) => (
               <label key={key}>
                 {key}
