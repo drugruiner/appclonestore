@@ -1,22 +1,20 @@
-export type Review = {
-  author: string;
-  rating: number;
-  text: string;
-};
+export type StoreAppKind = 'app' | 'game';
 
 export type StoreApp = {
   id: string;
   name: string;
   developer: string;
   category: string;
-  price: string;
-  rating: number;
-  downloads: string;
-  icon: string;
-  accent: string;
-  tagline: string;
+  kind: StoreAppKind;
+  subtitle: string;
   description: string;
-  features: string[];
+  iconText: string;
+  iconGradient: string;
+  rating: string;
+  reviews: string;
+  rank?: string;
+  tags: string[];
   screenshots: string[];
-  reviews: Review[];
+  action: 'Скачать' | 'Обновить' | 'Открыть';
+  hasInAppPurchases?: boolean;
 };
