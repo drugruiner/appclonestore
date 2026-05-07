@@ -1,178 +1,197 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Search, Sparkles, Star, Download, ChevronRight, Check } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { AppWindow, Boxes, Gamepad2, Layers3, Search, X } from 'lucide-react';
 import { seedApps } from './data/apps';
 import { StoreApp } from './types';
 
-function matchesApp(app: StoreApp, search: string) {
-  const normalizedSearch = search.trim().toLowerCase();
-  if (!normalizedSearch) return true;
+type Tab = 'today' | 'apps' | 'games' | 'search';
 
-  return [
-    app.name,
-    app.developer,
-    app.category,
-    app.tagline,
-    app.description,
-    ...app.features,
-  ]
+const tabs: { id: Tab; label: string; icon: typeof Layers3 }[] = [
+  { id: 'today', label: 'Сегодня', icon: Layers3 },
+  { id: 'apps', label: 'Приложения', icon: AppWindow },
+  { id: 'games', label: 'Игры', icon: Gamepad2 },
+  { id: 'search', label: 'Поиск', icon: Search },
+];
+
+function matchesApp(app: StoreApp, search: string) {
+  const value = search.trim().toLowerCase();
+  if (!value) return true;
+
+  return [app.name, app.developer, app.category, app.subtitle, app.description, ...app.tags]
     .join(' ')
     .toLowerCase()
-    .includes(normalizedSearch);
+    .includes(value);
+}
+
+function AppIcon({ app, large = false }: { app: StoreApp; large?: boolean }) {
+  return (
+    <div className={`app-icon ${large ? 'large' : ''}`} style={{ background: app.iconGradient }}>
+      <span>{app.iconText}</span>
+    </div>
+  );
+}
+
+function ActionButton({ app }: { app: StoreApp }) {
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  function handleClick() {
+    if (loading || done || app.action === 'Открыть') return;
+    setLoading(true);
+    window.setTimeout(() => {
+      setLoading(false);
+      setDone(true);
+    }, 1500);
+  }
+
+  const label = app.action === 'Открыть' ? 'Открыть' : done ? 'Готово' : app.action;
+
+  return (
+    <button className={`action-pill ${loading ? 'loading' : ''} ${done ? 'done' : ''}`} onClick={handleClick}>
+      {loading ? <span className="loader" /> : label}
+    </button>
+  );
+}
+
+function AppRow({ app, onOpen, featured = false }: { app: StoreApp; onOpen: (app: StoreApp) => void; featured?: boolean }) {
+  return (
+    <article className={`app-row ${featured ? 'featured-row' : ''}`} onClick={() => onOpen(app)}>
+      <AppIcon app={app} />
+      <div className="app-row-info">
+        <h3>{app.name}</h3>
+        <p>{app.subtitle}</p>
+        <div className="rating-line">★ ★ ★ ★ ☆ <span>{app.reviews}</span></div>
+      </div>
+      <div className="row-action" onClick={(event) => event.stopPropagation()}>
+        <ActionButton app={app} />
+        {app.hasInAppPurchases && <small>Встроенные покупки</small>}
+      </div>
+    </article>
+  );
+}
+
+function HeroCard({ app, onOpen }: { app: StoreApp; onOpen: (app: StoreApp) => void }) {
+  return (
+    <button className="hero-card" onClick={() => onOpen(app)}>
+      <div>
+        <span>Рекомендуем</span>
+        <h2>{app.name}</h2>
+        <p>{app.description}</p>
+      </div>
+      <div className="hero-card-footer">
+        <AppIcon app={app} />
+        <div><strong>{app.name}</strong><small>{app.subtitle}</small></div>
+        <ActionButton app={app} />
+      </div>
+    </button>
+  );
+}
+
+function AppDetail({ app, onClose }: { app: StoreApp; onClose: () => void }) {
+  return (
+    <section className="detail-screen">
+      <button className="close-detail" onClick={onClose}>Готово</button>
+      <div className="detail-head">
+        <AppIcon app={app} large />
+        <div>
+          <h1>{app.name}</h1>
+          <p>{app.subtitle}</p>
+          <ActionButton app={app} />
+        </div>
+      </div>
+      <div className="meta-strip">
+        <div><strong>{app.rating}</strong><span>рейтинг</span></div>
+        <div><strong>{app.reviews}</strong><span>оценок</span></div>
+        <div><strong>{app.category}</strong><span>категория</span></div>
+      </div>
+      {app.rank && <p className="rank-line">{app.rank}</p>}
+      <div className="screenshot-strip">
+        {app.screenshots.map((screen, index) => (
+          <div key={screen} className="fake-shot" style={{ background: app.iconGradient }}>
+            <span>{screen}</span>
+            <small>{index + 1}</small>
+          </div>
+        ))}
+      </div>
+      <p className="detail-description">{app.description}</p>
+      <div className="tag-row">{app.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
+    </section>
+  );
 }
 
 export default function App() {
-  const [apps] = useState<StoreApp[]>(seedApps);
+  const [activeTab, setActiveTab] = useState<Tab>('today');
   const [query, setQuery] = useState('');
-  const [selectedId, setSelectedId] = useState(seedApps[0].id);
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
-  const [downloadedIds, setDownloadedIds] = useState<string[]>([]);
+  const [selectedApp, setSelectedApp] = useState<StoreApp | null>(null);
 
-  const categories = ['All', ...Array.from(new Set(apps.map((app) => app.category)))];
-  const [category, setCategory] = useState('All');
+  const apps = seedApps.filter((app) => app.kind === 'app');
+  const games = seedApps.filter((app) => app.kind === 'game');
+  const searchResults = useMemo(() => seedApps.filter((app) => matchesApp(app, query)), [query]);
+  const visibleList = activeTab === 'games' ? games : activeTab === 'search' ? searchResults : apps;
 
-  const filteredApps = useMemo(() => {
-    return apps.filter((app) => {
-      const matchesSearch = matchesApp(app, query);
-      const matchesCategory = category === 'All' || app.category === category;
-      return matchesSearch && matchesCategory;
-    });
-  }, [apps, category, query]);
-
-  const selectedApp = apps.find((app) => app.id === selectedId) ?? filteredApps[0] ?? apps[0];
-
-  useEffect(() => {
-    if (filteredApps.length > 0 && !filteredApps.some((app) => app.id === selectedId)) {
-      setSelectedId(filteredApps[0].id);
-    }
-  }, [filteredApps, selectedId]);
-
-  function handleDownload(appId: string) {
-    if (downloadingId || downloadedIds.includes(appId)) return;
-
-    setDownloadingId(appId);
-    window.setTimeout(() => {
-      setDownloadingId(null);
-      setDownloadedIds((current) => (current.includes(appId) ? current : [...current, appId]));
-    }, 1600);
-  }
-
-  const isSelectedDownloading = downloadingId === selectedApp.id;
-  const isSelectedDownloaded = downloadedIds.includes(selectedApp.id);
+  const title = activeTab === 'today' ? 'Сегодня' : activeTab === 'apps' ? 'Приложения' : activeTab === 'games' ? 'Игры' : 'Поиск';
+  const suggested = query ? searchResults.slice(0, 12) : seedApps.slice(0, 8);
 
   return (
-    <main>
-      <section className="hero">
-        <nav className="topbar">
-          <div className="brand">
-            <div className="brand-mark"><Sparkles size={22} /></div>
-            <span>RuBox</span>
-          </div>
-        </nav>
+    <main className="phone-shell">
+      <header className="ios-header">
+        <h1>{title}</h1>
+        <div className="profile-dot">R</div>
+      </header>
 
-        <div className="hero-grid">
-          <div>
-            <p className="eyebrow">RuBox app library</p>
-            <h1>RuBox</h1>
-            <p className="hero-copy">Открывай страницы приложений, ищи нужные названия, смотри функции, отзывы и запускай красивую имитацию скачивания прямо из каталога.</p>
-            <div className="search-box">
-              <Search size={20} />
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Введите название приложения" />
-            </div>
-            {query.trim() && (
-              <p className="search-hint">
-                Найдено: {filteredApps.length}. Нажми на приложение в списке, чтобы открыть его страницу.
-              </p>
-            )}
-          </div>
-          <div className="featured-card" style={{ '--accent': selectedApp.accent } as React.CSSProperties}>
-            <img src={selectedApp.icon} alt="" />
-            <div>
-              <p>Сейчас в RuBox</p>
-              <h2>{selectedApp.name}</h2>
-              <span>{selectedApp.tagline}</span>
-            </div>
-          </div>
+      {activeTab === 'search' && (
+        <div className="search-panel">
+          <Search size={20} />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Игры, приложения и другое" autoFocus />
+          {query && <button onClick={() => setQuery('')}><X size={18} /></button>}
         </div>
+      )}
+
+      <section className="scroll-area">
+        {activeTab === 'today' && (
+          <>
+            <HeroCard app={seedApps[30]} onOpen={setSelectedApp} />
+            <HeroCard app={seedApps[40]} onOpen={setSelectedApp} />
+            <h2 className="section-title">Популярное сегодня</h2>
+            {seedApps.slice(0, 10).map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} />)}
+          </>
+        )}
+
+        {activeTab === 'apps' && (
+          <>
+            <div className="chips">{['AR Apps', 'News', 'Utilities', 'Business'].map((chip) => <span key={chip}>{chip}</span>)}</div>
+            <HeroCard app={apps[1]} onOpen={setSelectedApp} />
+            <h2 className="section-title">Must‑Have приложения</h2>
+            {visibleList.slice(0, 30).map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} />)}
+          </>
+        )}
+
+        {activeTab === 'games' && (
+          <>
+            <HeroCard app={games[1]} onOpen={setSelectedApp} />
+            <h2 className="section-title">Популярные игры</h2>
+            {visibleList.map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} />)}
+          </>
+        )}
+
+        {activeTab === 'search' && (
+          <>
+            <h2 className="section-title">{query ? 'Результаты' : 'Предложенное'}</h2>
+            {suggested.map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} featured={app.hasInAppPurchases} />)}
+            {!suggested.length && <p className="empty-text">Ничего не найдено. Напиши мне название приложения, и я добавлю его в RuBox.</p>}
+          </>
+        )}
       </section>
 
-      <section className="content-grid">
-        <aside className="sidebar">
-          <div className="category-row">
-            {categories.map((item) => (
-              <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>{item}</button>
-            ))}
-          </div>
+      <nav className="bottom-tabs">
+        {tabs.map(({ id, label, icon: Icon }) => (
+          <button key={id} className={activeTab === id ? 'active' : ''} onClick={() => setActiveTab(id)}>
+            <Icon size={24} />
+            <span>{label}</span>
+          </button>
+        ))}
+      </nav>
 
-          <div className="app-list">
-            {filteredApps.map((app) => (
-              <button key={app.id} className={`app-row ${selectedId === app.id ? 'selected' : ''}`} onClick={() => setSelectedId(app.id)}>
-                <img src={app.icon} alt="" />
-                <div>
-                  <strong>{app.name}</strong>
-                  <span>{app.developer}</span>
-                </div>
-                <ChevronRight size={18} />
-              </button>
-            ))}
-
-            {filteredApps.length === 0 && (
-              <div className="empty-state">
-                <strong>Ничего не найдено</strong>
-                <span>Если нужно добавить новое приложение в RuBox, напиши мне, и я внесу его вручную.</span>
-              </div>
-            )}
-          </div>
-        </aside>
-
-        <section className="detail-panel">
-          <div className="app-header">
-            <img src={selectedApp.icon} alt="" className="large-icon" />
-            <div>
-              <p className="category-label">{selectedApp.category}</p>
-              <h2>{selectedApp.name}</h2>
-              <p>{selectedApp.developer}</p>
-              <button
-                className={`download-button ${isSelectedDownloading ? 'loading' : ''} ${isSelectedDownloaded ? 'done' : ''}`}
-                onClick={() => handleDownload(selectedApp.id)}
-                disabled={isSelectedDownloading}
-                aria-label={`Download ${selectedApp.name}`}
-              >
-                {isSelectedDownloading && <span className="download-spinner" />}
-                {isSelectedDownloaded && !isSelectedDownloading && <Check size={18} />}
-                {!isSelectedDownloading && !isSelectedDownloaded && <Download size={18} />}
-                <span>{isSelectedDownloading ? 'Загрузка' : isSelectedDownloaded ? 'Готово' : 'Скачать'}</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="stats">
-            <div><Star size={18} /><strong>{selectedApp.rating}</strong><span>Rating</span></div>
-            <div><Download size={18} /><strong>{selectedApp.downloads}</strong><span>Downloads</span></div>
-            <div><Sparkles size={18} /><strong>{selectedApp.features.length}</strong><span>Features</span></div>
-          </div>
-
-          <p className="description">{selectedApp.description}</p>
-
-          <div className="feature-cloud">
-            {selectedApp.features.map((feature) => <span key={feature}>{feature}</span>)}
-          </div>
-
-          <h3>Preview</h3>
-          <div className="screenshots">
-            {selectedApp.screenshots.map((shot) => <img key={shot} src={shot} alt="App screenshot" />)}
-          </div>
-
-          <h3>Synthetic reviews</h3>
-          <div className="reviews">
-            {selectedApp.reviews.map((review) => (
-              <article key={`${review.author}-${review.text}`}>
-                <div><strong>{review.author}</strong><span>{'★'.repeat(review.rating)}</span></div>
-                <p>{review.text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-      </section>
+      {selectedApp && <AppDetail app={selectedApp} onClose={() => setSelectedApp(null)} />}
     </main>
   );
 }
