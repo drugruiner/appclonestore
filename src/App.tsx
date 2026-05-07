@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
-import { AppWindow, Boxes, Gamepad2, Layers3, Search, X } from 'lucide-react';
+import { AppWindow, Gamepad2, Layers3, Search, X, type LucideIcon } from 'lucide-react';
 import { seedApps } from './data/apps';
 import { StoreApp } from './types';
 
 type Tab = 'today' | 'apps' | 'games' | 'search';
 
-const tabs: { id: Tab; label: string; icon: typeof Layers3 }[] = [
+const tabs: { id: Tab; label: string; icon: LucideIcon }[] = [
   { id: 'today', label: 'Сегодня', icon: Layers3 },
   { id: 'apps', label: 'Приложения', icon: AppWindow },
   { id: 'games', label: 'Игры', icon: Gamepad2 },
@@ -130,6 +130,10 @@ export default function App() {
 
   const title = activeTab === 'today' ? 'Сегодня' : activeTab === 'apps' ? 'Приложения' : activeTab === 'games' ? 'Игры' : 'Поиск';
   const suggested = query ? searchResults.slice(0, 12) : seedApps.slice(0, 8);
+  const todayHero = seedApps.find((app) => app.id === 'tiktok') ?? seedApps[0];
+  const secondHero = seedApps.find((app) => app.id === 'roblox') ?? seedApps[1];
+  const appsHero = apps.find((app) => app.id === 'whatsapp') ?? apps[0];
+  const gamesHero = games.find((app) => app.id === 'brawl-stars') ?? games[0];
 
   return (
     <main className="phone-shell">
@@ -149,8 +153,8 @@ export default function App() {
       <section className="scroll-area">
         {activeTab === 'today' && (
           <>
-            <HeroCard app={seedApps[30]} onOpen={setSelectedApp} />
-            <HeroCard app={seedApps[40]} onOpen={setSelectedApp} />
+            <HeroCard app={todayHero} onOpen={setSelectedApp} />
+            <HeroCard app={secondHero} onOpen={setSelectedApp} />
             <h2 className="section-title">Популярное сегодня</h2>
             {seedApps.slice(0, 10).map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} />)}
           </>
@@ -159,7 +163,7 @@ export default function App() {
         {activeTab === 'apps' && (
           <>
             <div className="chips">{['AR Apps', 'News', 'Utilities', 'Business'].map((chip) => <span key={chip}>{chip}</span>)}</div>
-            <HeroCard app={apps[1]} onOpen={setSelectedApp} />
+            {appsHero && <HeroCard app={appsHero} onOpen={setSelectedApp} />}
             <h2 className="section-title">Must‑Have приложения</h2>
             {visibleList.slice(0, 30).map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} />)}
           </>
@@ -167,7 +171,7 @@ export default function App() {
 
         {activeTab === 'games' && (
           <>
-            <HeroCard app={games[1]} onOpen={setSelectedApp} />
+            {gamesHero && <HeroCard app={gamesHero} onOpen={setSelectedApp} />}
             <h2 className="section-title">Популярные игры</h2>
             {visibleList.map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} />)}
           </>
