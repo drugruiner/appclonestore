@@ -10,6 +10,7 @@ import './appstore-meta.css';
 import './reviews.css';
 import './remove-account.css';
 import './liquid-tabbar.css';
+import './tabbar-scroll';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
