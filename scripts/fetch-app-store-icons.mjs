@@ -57,7 +57,7 @@ function polish(url) {
   return url.replace(/\d+x\d+bb\.(jpg|png|webp)/, '512x512bb.$1');
 }
 
-async function lookup(id, term, country) {
+async function lookup(term, country) {
   const url = new URL('https://itunes.apple.com/search');
   url.searchParams.set('term', term);
   url.searchParams.set('entity', 'software');
@@ -65,30 +65,37 @@ async function lookup(id, term, country) {
   url.searchParams.set('country', country);
 
   const response = await fetch(url);
-  if (!response.ok) return '';
+  if (!response.ok) return null;
   const data = await response.json();
   const results = data.results ?? [];
-  const exact = results.find((item) => item.trackName?.toLowerCase() === term.toLowerCase()) ?? results[0];
-  const icon = exact?.artworkUrl512 ?? exact?.artworkUrl100 ?? '';
-  return icon ? polish(icon) : '';
+  return results.find((item) => item.trackName?.toLowerCase() === term.toLowerCase()) ?? results[0] ?? null;
 }
 
 const icons = {};
+const screenshots = {};
 
 for (const [id, term] of apps) {
-  let icon = '';
+  let item = null;
   for (const country of ['ru', 'us']) {
     try {
-      icon = await lookup(id, term, country);
-      if (icon) break;
+      item = await lookup(term, country);
+      if (item) break;
     } catch (error) {
-      console.warn(`Icon fetch failed for ${id} in ${country}: ${error.message}`);
+      console.warn(`Asset fetch failed for ${id} in ${country}: ${error.message}`);
     }
   }
 
-  if (icon) icons[id] = icon;
+  const icon = item?.artworkUrl512 ?? item?.artworkUrl100 ?? '';
+  if (icon) icons[id] = polish(icon);
+
+  const shots = [
+    ...(item?.screenshotUrls ?? []),
+    ...(item?.ipadScreenshotUrls ?? []),
+    ...(item?.appletvScreenshotUrls ?? []),
+  ].filter(Boolean).slice(0, 5);
+  if (shots.length) screenshots[id] = shots;
 }
 
-const content = `export const appStoreIcons: Record<string, string> = ${JSON.stringify(icons, null, 2)};\n`;
+const content = `export const appStoreIcons: Record<string, string> = ${JSON.stringify(icons, null, 2)};\n\nexport const appStoreScreenshots: Record<string, string[]> = ${JSON.stringify(screenshots, null, 2)};\n`;
 await writeFile('src/data/appStoreIcons.ts', content, 'utf8');
-console.log(`Generated ${Object.keys(icons).length} App Store icons`);
+console.log(`Generated ${Object.keys(icons).length} icons and ${Object.keys(screenshots).length} screenshot sets`);
