@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './data/customApps';
 import App from './App';
 import './styles.css';
 import './ios-share.css';
