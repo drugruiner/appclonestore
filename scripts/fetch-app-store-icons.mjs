@@ -57,6 +57,18 @@ function polish(url) {
   return url.replace(/\d+x\d+bb\.(jpg|png|webp)/, '512x512bb.$1');
 }
 
+function shortCount(value) {
+  if (!value) return '';
+  if (value >= 1_000_000) return `${Math.round(value / 1_000_000)}M`;
+  if (value >= 1_000) return `${Math.round(value / 1_000)}K`;
+  return String(value);
+}
+
+function sizeMb(bytes) {
+  if (!bytes) return '';
+  return `${(Number(bytes) / 1024 / 1024).toFixed(1)} MB`;
+}
+
 async function lookup(term, country) {
   const url = new URL('https://itunes.apple.com/search');
   url.searchParams.set('term', term);
@@ -73,6 +85,7 @@ async function lookup(term, country) {
 
 const icons = {};
 const screenshots = {};
+const metadata = {};
 
 for (const [id, term] of apps) {
   let item = null;
@@ -94,8 +107,22 @@ for (const [id, term] of apps) {
     ...(item?.appletvScreenshotUrls ?? []),
   ].filter(Boolean).slice(0, 5);
   if (shots.length) screenshots[id] = shots;
+
+  if (item) {
+    metadata[id] = {
+      rating: item.averageUserRating ? Number(item.averageUserRating).toFixed(1) : '',
+      ratingsCount: shortCount(item.userRatingCount),
+      ageRating: item.trackContentRating || item.contentAdvisoryRating || '',
+      category: item.primaryGenreName || item.genres?.[0] || '',
+      developer: item.sellerName || item.artistName || '',
+      languages: (item.languageCodesISO2A ?? []).slice(0, 1).join(', ').toUpperCase(),
+      languagesMore: Math.max(0, (item.languageCodesISO2A?.length ?? 0) - 1),
+      size: sizeMb(item.fileSizeBytes),
+      version: item.version || '',
+    };
+  }
 }
 
-const content = `export const appStoreIcons: Record<string, string> = ${JSON.stringify(icons, null, 2)};\n\nexport const appStoreScreenshots: Record<string, string[]> = ${JSON.stringify(screenshots, null, 2)};\n`;
+const content = `export const appStoreIcons: Record<string, string> = ${JSON.stringify(icons, null, 2)};\n\nexport const appStoreScreenshots: Record<string, string[]> = ${JSON.stringify(screenshots, null, 2)};\n\nexport type AppStoreMeta = { rating?: string; ratingsCount?: string; ageRating?: string; category?: string; developer?: string; languages?: string; languagesMore?: number; size?: string; version?: string };\n\nexport const appStoreMetadata: Record<string, AppStoreMeta> = ${JSON.stringify(metadata, null, 2)};\n`;
 await writeFile('src/data/appStoreIcons.ts', content, 'utf8');
-console.log(`Generated ${Object.keys(icons).length} icons and ${Object.keys(screenshots).length} screenshot sets`);
+console.log(`Generated ${Object.keys(icons).length} icons, ${Object.keys(screenshots).length} screenshot sets and ${Object.keys(metadata).length} metadata sets`);
