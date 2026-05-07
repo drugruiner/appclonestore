@@ -1,0 +1,55 @@
+.ios-share-glyph {
+  position: relative !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: inline-block !important;
+}
+
+.ios-share-glyph::before {
+  content: '' !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 3px !important;
+  width: 2.4px !important;
+  height: 11.5px !important;
+  transform: translateX(-50%) !important;
+  border-radius: 999px !important;
+  background: currentColor !important;
+}
+
+.ios-share-glyph::after {
+  content: '' !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 3px !important;
+  width: 9.5px !important;
+  height: 9.5px !important;
+  border-left: 2.4px solid currentColor !important;
+  border-top: 2.4px solid currentColor !important;
+  transform: translateX(-50%) rotate(45deg) !important;
+  transform-origin: center !important;
+  border-radius: 2px 0 0 0 !important;
+}
+
+.ios-share-glyph i {
+  position: absolute !important;
+  left: 4px !important;
+  right: 4px !important;
+  bottom: 2px !important;
+  width: auto !important;
+  height: 12px !important;
+  border: 2.4px solid currentColor !important;
+  border-top: 0 !important;
+  border-radius: 0 0 5px 5px !important;
+  box-sizing: border-box !important;
+}
+
+.ios-share-glyph b {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: 13px !important;
+  width: 9px !important;
+  height: 4px !important;
+  transform: translateX(-50%) !important;
+  background: #11151f !important;
+}
