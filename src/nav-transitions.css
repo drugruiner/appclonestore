@@ -3,6 +3,14 @@
   will-change: transform, opacity, filter;
 }
 
+.detail-screen {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+  filter: none !important;
+  background: #11151f !important;
+}
+
 body.tab-forward .scroll-area {
   animation: tab-slide-from-right .42s cubic-bezier(.2,.82,.2,1) both;
 }
@@ -15,7 +23,8 @@ body.detail-open-forward .detail-screen {
   animation: detail-slide-in-right .38s cubic-bezier(.18,.86,.22,1) both !important;
 }
 
-body.detail-close-back .detail-screen {
+body.detail-close-back .detail-screen,
+.detail-screen.closing {
   animation: detail-slide-out-right .3s cubic-bezier(.36,0,.2,1) both !important;
 }
 
@@ -36,13 +45,13 @@ body.detail-close-back .detail-screen {
 }
 
 @keyframes detail-slide-in-right {
-  0% { opacity: 1; transform: translateX(100%); filter: blur(0); }
-  100% { opacity: 1; transform: translateX(0); filter: blur(0); }
+  0% { opacity: 1; transform: translateX(100%); filter: none; background: #11151f; }
+  100% { opacity: 1; transform: translateX(0); filter: none; background: #11151f; }
 }
 
 @keyframes detail-slide-out-right {
-  0% { opacity: 1; transform: translateX(0); filter: blur(0); }
-  100% { opacity: 1; transform: translateX(100%); filter: blur(0); }
+  0% { opacity: 1; transform: translateX(0); filter: none; background: #11151f; }
+  100% { opacity: 1; transform: translateX(100%); filter: none; background: #11151f; }
 }
 
 @keyframes tab-button-pop {
