@@ -55,10 +55,14 @@ const svg = `
 
 await mkdir('public', { recursive: true });
 
+const buffers = new Map();
 for (const size of [180, 192, 512]) {
   const png = await sharp(Buffer.from(svg)).resize(size, size).png().toBuffer();
-  await writeFile(`public/rubox-icon-v3-${size}.png`, png);
+  buffers.set(size, png);
+  await writeFile(`public/rubox-icon-v4-${size}.png`, png);
 }
 
-await writeFile('public/rubox-icon-v3.svg', svg, 'utf8');
-console.log('Generated RuBox iOS v3 PNG icons');
+await writeFile('public/apple-touch-icon.png', buffers.get(180));
+await writeFile('public/apple-touch-icon-precomposed.png', buffers.get(180));
+await writeFile('public/rubox-icon-v4.svg', svg, 'utf8');
+console.log('Generated RuBox iOS v4 PNG icons and default Apple touch icons');
