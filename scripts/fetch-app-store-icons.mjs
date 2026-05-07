@@ -53,6 +53,10 @@ const apps = [
   ['homescapes', 'Homescapes'],
 ];
 
+const directLookupIds = {
+  minecraft: '479516143',
+};
+
 function polish(url) {
   return url.replace(/\d+x\d+bb\.(jpg|png|webp)/, '512x512bb.$1');
 }
@@ -83,11 +87,25 @@ function scoreResult(item, term, id) {
   return score;
 }
 
+async function lookupByAppId(appId, country) {
+  const url = new URL('https://itunes.apple.com/lookup');
+  url.searchParams.set('id', appId);
+  url.searchParams.set('country', country);
+
+  const response = await fetch(url);
+  if (!response.ok) return null;
+  const data = await response.json();
+  return data.results?.[0] ?? null;
+}
+
 async function lookup(term, country, id) {
+  const directId = directLookupIds[id];
+  if (directId) return lookupByAppId(directId, country);
+
   const url = new URL('https://itunes.apple.com/search');
   url.searchParams.set('term', term);
   url.searchParams.set('entity', 'software');
-  url.searchParams.set('limit', id === 'minecraft' ? '25' : '8');
+  url.searchParams.set('limit', '8');
   url.searchParams.set('country', country);
 
   const response = await fetch(url);
@@ -103,7 +121,7 @@ const metadata = {};
 
 for (const [id, term] of apps) {
   let item = null;
-  for (const country of ['ru', 'us']) {
+  for (const country of ['us', 'ru']) {
     try {
       item = await lookup(term, country, id);
       if (item) break;
