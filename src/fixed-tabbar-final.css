@@ -1,0 +1,56 @@
+html,
+body,
+#root {
+  transform: none !important;
+}
+
+.phone-shell {
+  transform: none !important;
+  transition: none !important;
+  overflow-x: hidden !important;
+}
+
+.pull-refresh-indicator {
+  transform: translateX(-50%) translateY(8px) !important;
+}
+
+.bottom-tabs {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: max(12px, env(safe-area-inset-bottom)) !important;
+  top: auto !important;
+  z-index: 9999 !important;
+  width: min(392px, calc(100vw - 24px)) !important;
+  transform: translate3d(-50%, 0, 0) !important;
+  opacity: .82 !important;
+  pointer-events: auto !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.022)),
+    rgba(16,16,20,.26) !important;
+  border-color: rgba(255,255,255,.1) !important;
+  box-shadow:
+    0 12px 36px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.13),
+    inset 0 -1px 0 rgba(255,255,255,.03) !important;
+  backdrop-filter: blur(34px) saturate(220%) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(220%) !important;
+  will-change: auto !important;
+}
+
+.bottom-tabs button.active {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.028)),
+    rgba(255,255,255,.045) !important;
+}
+
+.detail-screen {
+  z-index: 20 !important;
+}
+
+@media (max-width: 380px) {
+  .bottom-tabs {
+    width: calc(100vw - 18px) !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+}
