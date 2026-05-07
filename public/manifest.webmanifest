@@ -1,0 +1,19 @@
+{
+  "name": "App Clone Store",
+  "short_name": "CloneStore",
+  "description": "Premium App Store-inspired app catalog.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#07111f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
