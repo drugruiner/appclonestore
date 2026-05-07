@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { AppWindow, Gamepad2, Layers3, Search, X, type LucideIcon } from 'lucide-react';
+import { AppWindow, ChevronLeft, Gamepad2, Layers3, Search, Share2, X, type LucideIcon } from 'lucide-react';
 import { seedApps } from './data/apps';
-import { appIconDomains } from './data/iconDomains';
 import { StoreApp } from './types';
 
 type Tab = 'today' | 'apps' | 'games' | 'search';
@@ -14,38 +13,23 @@ const tabs: { id: Tab; label: string; icon: LucideIcon }[] = [
   { id: 'games', label: 'Игры', icon: Gamepad2 },
   { id: 'search', label: 'Поиск', icon: Search },
 ];
-
 const initialInstall: InstallEntry = { status: 'idle', remaining: 60 };
 
 function matchesApp(app: StoreApp, search: string) {
   const value = search.trim().toLowerCase();
   if (!value) return true;
-  return [app.name, app.developer, app.category, app.subtitle, app.description, ...app.tags]
-    .join(' ')
-    .toLowerCase()
-    .includes(value);
+  return [app.name, app.developer, app.category, app.subtitle, app.description, ...app.tags].join(' ').toLowerCase().includes(value);
 }
-
-function compactTime(seconds: number) {
-  return `0:${seconds.toString().padStart(2, '0')}`;
-}
-
-function detailTime(seconds: number) {
-  return seconds >= 60 ? '1 минута' : `${seconds} сек.`;
-}
-
-function getProgress(entry: InstallEntry) {
-  return Math.min(100, Math.max(0, ((60 - entry.remaining) / 60) * 100));
-}
+function compactTime(seconds: number) { return `0:${seconds.toString().padStart(2, '0')}`; }
+function detailTime(seconds: number) { return seconds >= 60 ? '1 минута' : `${seconds} сек.`; }
+function getProgress(entry: InstallEntry) { return Math.min(100, Math.max(0, ((60 - entry.remaining) / 60) * 100)); }
 
 function AppIcon({ app, large = false }: { app: StoreApp; large?: boolean }) {
-  const domain = appIconDomains[app.id];
-  const iconUrl = domain ? `https://www.google.com/s2/favicons?domain=${domain}&sz=256` : '';
-
   return (
     <div className={`app-icon ${large ? 'large' : ''}`} style={{ background: app.iconGradient }}>
+      <span className="icon-blur" />
+      <span className="icon-mark">{app.iconText}</span>
       <span className="icon-shine" />
-      {iconUrl ? <img src={iconUrl} alt="" loading="lazy" /> : <span className="icon-text">{app.iconText}</span>}
     </div>
   );
 }
@@ -53,15 +37,9 @@ function AppIcon({ app, large = false }: { app: StoreApp; large?: boolean }) {
 function DownloadStatus({ entry, onToggle }: { entry: InstallEntry; onToggle: () => void }) {
   const paused = entry.status === 'paused';
   const progress = getProgress(entry);
-
   return (
     <div className="download-status">
-      <button
-        className={`download-status-icon ${paused ? 'paused' : 'loading'}`}
-        style={{ '--progress': `${progress}%` } as React.CSSProperties}
-        onClick={onToggle}
-        aria-label={paused ? 'Продолжить установку' : 'Остановить установку'}
-      >
+      <button className={`download-status-icon ${paused ? 'paused' : 'loading'}`} style={{ '--progress': `${progress}%` } as Record<string, string>} onClick={onToggle} aria-label={paused ? 'Продолжить установку' : 'Остановить установку'}>
         {paused ? <span className="resume-triangle" /> : <span className="download-status-bars"><i /><i /></span>}
       </button>
       <span>{paused ? 'Приостановлено' : detailTime(entry.remaining)}</span>
@@ -70,39 +48,17 @@ function DownloadStatus({ entry, onToggle }: { entry: InstallEntry; onToggle: ()
 }
 
 function ActionButton({ entry, onToggle, variant = 'compact' }: { entry: InstallEntry; onToggle: () => void; variant?: 'compact' | 'detail' }) {
-  if (variant === 'detail' && (entry.status === 'loading' || entry.status === 'paused')) {
-    return <DownloadStatus entry={entry} onToggle={onToggle} />;
-  }
-
-  const label = entry.status === 'open'
-    ? 'Открыть'
-    : entry.status === 'loading'
-      ? compactTime(entry.remaining)
-      : entry.status === 'paused'
-        ? '▶'
-        : 'Скачать';
-
-  return (
-    <button className={`action-pill ${entry.status}`} onClick={onToggle}>
-      {entry.status === 'loading' && <span className="loader" />}
-      <span>{label}</span>
-    </button>
-  );
+  if (variant === 'detail' && (entry.status === 'loading' || entry.status === 'paused')) return <DownloadStatus entry={entry} onToggle={onToggle} />;
+  const label = entry.status === 'open' ? 'Открыть' : entry.status === 'loading' ? compactTime(entry.remaining) : entry.status === 'paused' ? '▶' : 'Скачать';
+  return <button className={`action-pill ${entry.status}`} onClick={onToggle}>{entry.status === 'loading' && <span className="loader" />}<span>{label}</span></button>;
 }
 
 function AppRow({ app, onOpen, featured = false, installEntry, onToggleInstall }: { app: StoreApp; onOpen: (app: StoreApp) => void; featured?: boolean; installEntry: InstallEntry; onToggleInstall: (id: string) => void }) {
   return (
     <article className={`app-row ${featured ? 'featured-row' : ''}`} onClick={() => onOpen(app)}>
       <AppIcon app={app} />
-      <div className="app-row-info">
-        <h3>{app.name}</h3>
-        <p>{app.subtitle}</p>
-        <div className="rating-line">★ ★ ★ ★ ☆ <span>{app.reviews}</span></div>
-      </div>
-      <div className="row-action" onClick={(event) => event.stopPropagation()}>
-        <ActionButton entry={installEntry} onToggle={() => onToggleInstall(app.id)} />
-        {app.hasInAppPurchases && <small>Встроенные покупки</small>}
-      </div>
+      <div className="app-row-info"><h3>{app.name}</h3><p>{app.subtitle}</p><div className="rating-line">★ ★ ★ ★ ☆ <span>{app.reviews}</span></div></div>
+      <div className="row-action" onClick={(event) => event.stopPropagation()}><ActionButton entry={installEntry} onToggle={() => onToggleInstall(app.id)} />{app.hasInAppPurchases && <small>Встроенные покупки</small>}</div>
     </article>
   );
 }
@@ -110,48 +66,26 @@ function AppRow({ app, onOpen, featured = false, installEntry, onToggleInstall }
 function HeroCard({ app, onOpen, installEntry, onToggleInstall }: { app: StoreApp; onOpen: (app: StoreApp) => void; installEntry: InstallEntry; onToggleInstall: (id: string) => void }) {
   return (
     <button className="hero-card" onClick={() => onOpen(app)}>
-      <div>
-        <span>Рекомендуем</span>
-        <h2>{app.name}</h2>
-        <p>{app.description}</p>
-      </div>
-      <div className="hero-card-footer">
-        <AppIcon app={app} />
-        <div><strong>{app.name}</strong><small>{app.subtitle}</small></div>
-        <div onClick={(event) => event.stopPropagation()}>
-          <ActionButton entry={installEntry} onToggle={() => onToggleInstall(app.id)} />
-        </div>
-      </div>
+      <div><span>Рекомендуем</span><h2>{app.name}</h2><p>{app.description}</p></div>
+      <div className="hero-card-footer"><AppIcon app={app} /><div><strong>{app.name}</strong><small>{app.subtitle}</small></div><div onClick={(event) => event.stopPropagation()}><ActionButton entry={installEntry} onToggle={() => onToggleInstall(app.id)} /></div></div>
     </button>
   );
 }
 
-function AppDetail({ app, onClose, installEntry, onToggleInstall }: { app: StoreApp; onClose: () => void; installEntry: InstallEntry; onToggleInstall: (id: string) => void }) {
+function AppDetail({ app, onClose, closing, installEntry, onToggleInstall }: { app: StoreApp; onClose: () => void; closing: boolean; installEntry: InstallEntry; onToggleInstall: (id: string) => void }) {
   return (
-    <section className="detail-screen">
-      <button className="close-detail" onClick={onClose}>Готово</button>
+    <section className={`detail-screen ${closing ? 'closing' : ''}`}>
+      <div className="detail-nav">
+        <button className="nav-circle" onClick={onClose} aria-label="Назад"><ChevronLeft size={32} /></button>
+        <button className="nav-circle" aria-label="Поделиться"><Share2 size={26} /></button>
+      </div>
       <div className="detail-head">
         <AppIcon app={app} large />
-        <div>
-          <h1>{app.name}</h1>
-          <p>{app.subtitle}</p>
-          <ActionButton entry={installEntry} onToggle={() => onToggleInstall(app.id)} variant="detail" />
-        </div>
+        <div><h1>{app.name}</h1><p>{app.subtitle}</p><ActionButton entry={installEntry} onToggle={() => onToggleInstall(app.id)} variant="detail" /></div>
       </div>
-      <div className="meta-strip">
-        <div><strong>{app.rating}</strong><span>рейтинг</span></div>
-        <div><strong>{app.reviews}</strong><span>оценок</span></div>
-        <div><strong>{app.category}</strong><span>категория</span></div>
-      </div>
+      <div className="meta-strip"><div><strong>{app.rating}</strong><span>рейтинг</span></div><div><strong>{app.reviews}</strong><span>оценок</span></div><div><strong>{app.category}</strong><span>категория</span></div></div>
       {app.rank && <p className="rank-line">{app.rank}</p>}
-      <div className="screenshot-strip">
-        {app.screenshots.map((screen, index) => (
-          <div key={screen} className="fake-shot" style={{ background: app.iconGradient }}>
-            <span>{screen}</span>
-            <small>{index + 1}</small>
-          </div>
-        ))}
-      </div>
+      <div className="screenshot-strip">{app.screenshots.map((screen, index) => <div key={screen} className="fake-shot" style={{ background: app.iconGradient }}><span>{screen}</span><small>{index + 1}</small></div>)}</div>
       <p className="detail-description">{app.description}</p>
       <div className="tag-row">{app.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
     </section>
@@ -162,12 +96,12 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('today');
   const [query, setQuery] = useState('');
   const [selectedApp, setSelectedApp] = useState<StoreApp | null>(null);
+  const [detailClosing, setDetailClosing] = useState(false);
   const [installMap, setInstallMap] = useState<Record<string, InstallEntry>>({});
 
   useEffect(() => {
     const hasLoading = Object.values(installMap).some((entry) => entry.status === 'loading');
     if (!hasLoading) return;
-
     const timer = window.setInterval(() => {
       setInstallMap((current) => {
         const next: Record<string, InstallEntry> = { ...current };
@@ -178,14 +112,10 @@ export default function App() {
         return next;
       });
     }, 1000);
-
     return () => window.clearInterval(timer);
   }, [installMap]);
 
-  function getInstallEntry(appId: string): InstallEntry {
-    return installMap[appId] ?? initialInstall;
-  }
-
+  function getInstallEntry(appId: string): InstallEntry { return installMap[appId] ?? initialInstall; }
   function toggleInstall(appId: string) {
     setInstallMap((current) => {
       const entry = current[appId] ?? initialInstall;
@@ -195,12 +125,13 @@ export default function App() {
       return current;
     });
   }
+  function openApp(app: StoreApp) { setSelectedApp(app); setDetailClosing(false); }
+  function closeDetail() { setDetailClosing(true); window.setTimeout(() => { setSelectedApp(null); setDetailClosing(false); }, 260); }
 
   const apps = seedApps.filter((app) => app.kind === 'app');
   const games = seedApps.filter((app) => app.kind === 'game');
   const searchResults = useMemo(() => seedApps.filter((app) => matchesApp(app, query)), [query]);
   const visibleList = activeTab === 'games' ? games : activeTab === 'search' ? searchResults : apps;
-
   const title = activeTab === 'today' ? 'Сегодня' : activeTab === 'apps' ? 'Приложения' : activeTab === 'games' ? 'Игры' : 'Поиск';
   const suggested = query ? searchResults.slice(0, 12) : seedApps.slice(0, 8);
   const todayHero = seedApps.find((app) => app.id === 'tiktok') ?? seedApps[0];
@@ -210,67 +141,16 @@ export default function App() {
 
   return (
     <main className="phone-shell">
-      <header className="ios-header">
-        <h1>{title}</h1>
-        <div className="profile-dot">R</div>
-      </header>
-
-      {activeTab === 'search' && (
-        <div className="search-panel">
-          <Search size={20} />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Игры, приложения и другое" autoFocus />
-          {query && <button onClick={() => setQuery('')}><X size={18} /></button>}
-        </div>
-      )}
-
+      <header className="ios-header"><h1>{title}</h1><div className="profile-dot">R</div></header>
+      {activeTab === 'search' && <div className="search-panel"><Search size={20} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Игры, приложения и другое" autoFocus />{query && <button onClick={() => setQuery('')}><X size={18} /></button>}</div>}
       <section className="scroll-area">
-        {activeTab === 'today' && (
-          <>
-            <HeroCard app={todayHero} onOpen={setSelectedApp} installEntry={getInstallEntry(todayHero.id)} onToggleInstall={toggleInstall} />
-            <HeroCard app={secondHero} onOpen={setSelectedApp} installEntry={getInstallEntry(secondHero.id)} onToggleInstall={toggleInstall} />
-            <h2 className="section-title">Популярное сегодня</h2>
-            {seedApps.slice(0, 10).map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} installEntry={getInstallEntry(app.id)} onToggleInstall={toggleInstall} />)}
-          </>
-        )}
-
-        {activeTab === 'apps' && (
-          <>
-            <div className="chips">{['AR Apps', 'News', 'Utilities', 'Business'].map((chip) => <span key={chip}>{chip}</span>)}</div>
-            {appsHero && <HeroCard app={appsHero} onOpen={setSelectedApp} installEntry={getInstallEntry(appsHero.id)} onToggleInstall={toggleInstall} />}
-            <h2 className="section-title">Must‑Have приложения</h2>
-            {visibleList.slice(0, 30).map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} installEntry={getInstallEntry(app.id)} onToggleInstall={toggleInstall} />)}
-          </>
-        )}
-
-        {activeTab === 'games' && (
-          <>
-            {gamesHero && <HeroCard app={gamesHero} onOpen={setSelectedApp} installEntry={getInstallEntry(gamesHero.id)} onToggleInstall={toggleInstall} />}
-            <h2 className="section-title">Популярные игры</h2>
-            {visibleList.map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} installEntry={getInstallEntry(app.id)} onToggleInstall={toggleInstall} />)}
-          </>
-        )}
-
-        {activeTab === 'search' && (
-          <>
-            <h2 className="section-title">{query ? 'Результаты' : 'Предложенное'}</h2>
-            {suggested.map((app) => <AppRow key={app.id} app={app} onOpen={setSelectedApp} featured={app.hasInAppPurchases} installEntry={getInstallEntry(app.id)} onToggleInstall={toggleInstall} />)}
-            {!suggested.length && <p className="empty-text">Ничего не найдено. Напиши мне название приложения, и я добавлю его в RuBox.</p>}
-          </>
-        )}
+        {activeTab === 'today' && <><HeroCard app={todayHero} onOpen={openApp} installEntry={getInstallEntry(todayHero.id)} onToggleInstall={toggleInstall} /><HeroCard app={secondHero} onOpen={openApp} installEntry={getInstallEntry(secondHero.id)} onToggleInstall={toggleInstall} /><h2 className="section-title">Популярное сегодня</h2>{seedApps.slice(0, 10).map((app) => <AppRow key={app.id} app={app} onOpen={openApp} installEntry={getInstallEntry(app.id)} onToggleInstall={toggleInstall} />)}</>}
+        {activeTab === 'apps' && <><div className="chips">{['AR Apps', 'News', 'Utilities', 'Business'].map((chip) => <span key={chip}>{chip}</span>)}</div>{appsHero && <HeroCard app={appsHero} onOpen={openApp} installEntry={getInstallEntry(appsHero.id)} onToggleInstall={toggleInstall} />}<h2 className="section-title">Must‑Have приложения</h2>{visibleList.slice(0, 30).map((app) => <AppRow key={app.id} app={app} onOpen={openApp} installEntry={getInstallEntry(app.id)} onToggleInstall={toggleInstall} />)}</>}
+        {activeTab === 'games' && <>{gamesHero && <HeroCard app={gamesHero} onOpen={openApp} installEntry={getInstallEntry(gamesHero.id)} onToggleInstall={toggleInstall} />}<h2 className="section-title">Популярные игры</h2>{visibleList.map((app) => <AppRow key={app.id} app={app} onOpen={openApp} installEntry={getInstallEntry(app.id)} onToggleInstall={toggleInstall} />)}</>}
+        {activeTab === 'search' && <><h2 className="section-title">{query ? 'Результаты' : 'Предложенное'}</h2>{suggested.map((app) => <AppRow key={app.id} app={app} onOpen={openApp} featured={app.hasInAppPurchases} installEntry={getInstallEntry(app.id)} onToggleInstall={toggleInstall} />)}{!suggested.length && <p className="empty-text">Ничего не найдено. Напиши мне название приложения, и я добавлю его в RuBox.</p>}</>}
       </section>
-
-      <nav className="bottom-tabs">
-        {tabs.map(({ id, label, icon: Icon }) => (
-          <button key={id} className={activeTab === id ? 'active' : ''} onClick={() => setActiveTab(id)}>
-            <Icon size={24} />
-            <span>{label}</span>
-          </button>
-        ))}
-      </nav>
-
-      {selectedApp && (
-        <AppDetail app={selectedApp} onClose={() => setSelectedApp(null)} installEntry={getInstallEntry(selectedApp.id)} onToggleInstall={toggleInstall} />
-      )}
+      <nav className="bottom-tabs">{tabs.map(({ id, label, icon: Icon }) => <button key={id} className={activeTab === id ? 'active' : ''} onClick={() => setActiveTab(id)}><Icon size={24} /><span>{label}</span></button>)}</nav>
+      {selectedApp && <AppDetail app={selectedApp} onClose={closeDetail} closing={detailClosing} installEntry={getInstallEntry(selectedApp.id)} onToggleInstall={toggleInstall} />}
     </main>
   );
 }
