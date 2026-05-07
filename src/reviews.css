@@ -1,0 +1,137 @@
+.reviews-section {
+  margin: 28px 0 18px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.reviews-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.reviews-head h2 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.045em;
+}
+
+.reviews-head button {
+  color: #0a84ff;
+  background: transparent;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.rating-summary {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+  color: #8e8e93;
+}
+
+.rating-summary strong {
+  display: block;
+  color: #f5f5f7;
+  font-size: 54px;
+  line-height: .9;
+  letter-spacing: -0.05em;
+}
+
+.rating-summary span,
+.rating-summary small {
+  display: block;
+  margin-top: 6px;
+  color: #8e8e93;
+  font-size: 14px;
+}
+
+.big-stars {
+  margin: 0;
+  color: #d1d1d6;
+  font-size: 24px;
+  letter-spacing: 2px;
+}
+
+.reviews-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 82%;
+  gap: 12px;
+  overflow-x: auto;
+  margin: 0 -18px;
+  padding: 0 18px 8px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.reviews-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.review-card {
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #1c1c1e;
+  border: 1px solid rgba(255,255,255,.08);
+  scroll-snap-align: start;
+}
+
+.review-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.review-top strong {
+  min-width: 0;
+  color: #f5f5f7;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.review-top span {
+  flex: 0 0 auto;
+  color: #8e8e93;
+  font-size: 13px;
+}
+
+.review-stars {
+  color: #d1d1d6;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+.review-card p {
+  margin: 0;
+  color: #d1d1d6;
+  font-size: 15px;
+  line-height: 1.42;
+}
+
+.review-card footer {
+  margin-top: auto;
+  color: #8e8e93;
+  font-size: 14px;
+}
+
+@media (max-width: 380px) {
+  .reviews-carousel {
+    grid-auto-columns: 88%;
+    margin-inline: -14px;
+    padding-inline: 14px;
+  }
+
+  .rating-summary strong {
+    font-size: 48px;
+  }
+}
