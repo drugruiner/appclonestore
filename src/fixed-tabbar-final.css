@@ -18,30 +18,123 @@ body,
   position: fixed !important;
   left: 50% !important;
   right: auto !important;
-  bottom: max(12px, env(safe-area-inset-bottom)) !important;
+  bottom: max(8px, env(safe-area-inset-bottom)) !important;
   top: auto !important;
   z-index: 9999 !important;
-  width: min(392px, calc(100vw - 24px)) !important;
+  width: min(452px, calc(100vw - 14px)) !important;
+  min-height: 76px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 76px !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  padding: 0 !important;
   transform: translate3d(-50%, 0, 0) !important;
-  opacity: .82 !important;
+  opacity: .96 !important;
   pointer-events: auto !important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.022)),
-    rgba(16,16,20,.26) !important;
-  border-color: rgba(255,255,255,.1) !important;
-  box-shadow:
-    0 12px 36px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.13),
-    inset 0 -1px 0 rgba(255,255,255,.03) !important;
-  backdrop-filter: blur(34px) saturate(220%) !important;
-  -webkit-backdrop-filter: blur(34px) saturate(220%) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   will-change: auto !important;
 }
 
-.bottom-tabs button.active {
+.bottom-tabs::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(100% - 86px);
+  border-radius: 38px;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.028)),
-    rgba(255,255,255,.045) !important;
+    linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.045)),
+    rgba(22,22,24,.72);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow:
+    0 14px 42px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(255,255,255,.05);
+  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+}
+
+.bottom-tabs button {
+  position: relative !important;
+  z-index: 1 !important;
+  min-width: 0 !important;
+  display: grid !important;
+  place-items: center !important;
+  align-content: center !important;
+  gap: 3px !important;
+  padding: 9px 4px !important;
+  border-radius: 32px !important;
+  color: rgba(255,255,255,.86) !important;
+  background: transparent !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: -.02em !important;
+  transition: color .18s ease, transform .18s ease, background .18s ease;
+}
+
+.bottom-tabs button:nth-child(1) { order: 1; }
+.bottom-tabs button:nth-child(3) { order: 2; }
+.bottom-tabs button:nth-child(2) { order: 3; }
+.bottom-tabs button:nth-child(4) { order: 4; }
+
+.bottom-tabs button svg {
+  width: 28px !important;
+  height: 28px !important;
+  stroke-width: 2.35 !important;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.45));
+}
+
+.bottom-tabs button span {
+  line-height: 1 !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,.55);
+}
+
+.bottom-tabs button.active {
+  color: #0a84ff !important;
+  background: rgba(255,255,255,.055) !important;
+}
+
+.bottom-tabs button:active {
+  transform: scale(.94);
+}
+
+.bottom-tabs button:nth-child(4) {
+  width: 76px !important;
+  height: 76px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  color: #0a84ff !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.04)),
+    rgba(28,31,36,.82) !important;
+  border: 1px solid rgba(255,255,255,.14) !important;
+  box-shadow:
+    0 14px 42px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.16) !important;
+  backdrop-filter: blur(30px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(190%) !important;
+}
+
+.bottom-tabs button:nth-child(4) span {
+  display: none !important;
+}
+
+.bottom-tabs button:nth-child(4) svg {
+  width: 35px !important;
+  height: 35px !important;
+  stroke-width: 2.1 !important;
+}
+
+.bottom-tabs button:nth-child(4).active {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(10,132,255,.18), transparent 58%),
+    linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.045)),
+    rgba(28,31,36,.86) !important;
 }
 
 .detail-screen {
@@ -50,7 +143,18 @@ body,
 
 @media (max-width: 380px) {
   .bottom-tabs {
-    width: calc(100vw - 18px) !important;
-    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    width: calc(100vw - 10px) !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) 70px !important;
+    gap: 8px !important;
+    bottom: max(7px, env(safe-area-inset-bottom)) !important;
+  }
+
+  .bottom-tabs::before {
+    width: calc(100% - 78px);
+  }
+
+  .bottom-tabs button:nth-child(4) {
+    width: 70px !important;
+    height: 70px !important;
   }
 }
